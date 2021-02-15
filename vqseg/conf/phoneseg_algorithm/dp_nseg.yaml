@@ -1,0 +1,4 @@
+# @package _group_
+function: benji_l2_n_segments
+n_frames_per_segment: 3
+n_min_segments: 3

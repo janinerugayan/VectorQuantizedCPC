@@ -1,0 +1,10 @@
+defaults:
+    - phoneseg_algorithm: greedyseg
+model: vqcpc
+
+input_format: npy  # npy or txt
+downsample_factor: 2
+
+split: ???
+dataset: ???
+output_tag: ???

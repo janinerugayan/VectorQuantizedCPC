@@ -1,0 +1,8 @@
+defaults:
+    - wordseg_algorithm: tp
+model: vqcpc
+
+split: ???
+dataset: ???
+phoneseg_tag: ???
+output_tag: ???

@@ -1,0 +1,4 @@
+# @package _group_
+function: "dpseg"
+nfolds: 1
+args: "--randseed 1"

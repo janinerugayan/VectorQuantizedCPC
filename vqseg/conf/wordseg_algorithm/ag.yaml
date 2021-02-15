@@ -1,0 +1,5 @@
+# @package _group_
+function: "ag"
+nruns: 4  # 4
+njobs: 3
+args: "-n 100"

@@ -1,0 +1,5 @@
+# @package _group_
+function: l2_segmentation
+n_min_frames: 0
+n_max_frames: 15
+dur_weight: 400  # 20**2

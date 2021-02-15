@@ -1,0 +1,8 @@
+model: vqcpc
+
+phone_tolerance: 2
+word_tolerance: 2
+
+split: ???
+dataset: ???
+seg_tag: ???
