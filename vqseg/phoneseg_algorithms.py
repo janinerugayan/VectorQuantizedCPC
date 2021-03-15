@@ -45,7 +45,7 @@ def greedy_n_segments(embedding, z, n_frames_per_segment=3, n_min_segments=0):
     if clusters[-1] != prev_cluster:
         boundaries[i + 1] = True
     boundaries[-1] = True  # final position is always boundary
-    
+
     # Code assignments
     embedding_distances = distance.cdist(z, embedding, metric="sqeuclidean")
     segmented_indices = []
@@ -58,7 +58,7 @@ def greedy_n_segments(embedding, z, n_frames_per_segment=3, n_min_segments=0):
             )
         segmented_indices.append((i_start, i_end, code_index))
         j_prev = j + 1
-    
+
     return boundaries, segmented_indices
 
 
@@ -94,7 +94,7 @@ def custom_viterbi(costs, n_frames):
     ------
     (summed_cost, boundaries) : (float, vector of bool)
     """
-    
+
     # Initialise
     boundaries = np.zeros(n_frames, dtype=bool)
     boundaries[-1] = True
@@ -117,7 +117,7 @@ def custom_viterbi(costs, n_frames):
     while True:
         i = int(0.5*(t - 1)*t)
         q_t_min_list = (
-            costs[i:i + t] + alphas[:t]       
+            costs[i:i + t] + alphas[:t]
             )
         q_t_min_list = q_t_min_list[::-1]
         q_t = np.argmin(q_t_min_list) + 1
@@ -143,11 +143,11 @@ def l2_segmentation(embedding, z, n_min_frames=0, n_max_frames=15,
 
     # Hyperparameters
     count_weight = 0
-       
+
     # Distances between each z and each embedding (squared Euclidean)
     embedding_distances = distance.cdist(z, embedding, metric="sqeuclidean")
-    # print("embedding_distances shape: {}".format(embedding_distances.shape))
-    
+    print("embedding_distances shape: {}".format(embedding_distances.shape))
+
     # Costs for segment intervals
     segment_intervals = get_segment_intervals(z.shape[0], n_max_frames)
     costs = np.inf*np.ones(len(segment_intervals))
@@ -162,10 +162,10 @@ def l2_segmentation(embedding, z, n_min_frames=0, n_max_frames=15,
             np.sum(embedding_distances[i_start:i_end, :], axis=0)
             ) - dur_weight*(dur - 1) + count_weight
         costs[i_seg] = cost
-    
+
     # Viterbi segmentation
     summed_cost, boundaries = custom_viterbi(costs, z.shape[0])
-    
+
     # Code assignments
     segmented_codes = []
     j_prev = 0
@@ -175,7 +175,7 @@ def l2_segmentation(embedding, z, n_min_frames=0, n_max_frames=15,
         code = np.argmin(np.sum(embedding_distances[i_start:i_end, :], axis=0))
         segmented_codes.append((i_start, i_end, code))
         j_prev = j + 1
-    
+
     return boundaries, segmented_codes
 
 
@@ -200,7 +200,7 @@ def custom_viterbi_n_segments(costs, n_frames, n_segments):
     ------
     (summed_cost, boundaries) : (float, vector of bool)
     """
-    
+
     # Initialise
     boundaries = np.zeros(n_frames, dtype=bool)
     boundaries[-1] = True
@@ -235,7 +235,7 @@ def custom_viterbi_n_segments(costs, n_frames, n_segments):
         # print("q_t_min_list: {}".format(q_t_min_list))
         # print("arg min: {}".format(q_t))
         # print("Cost: {:.4f}".format(costs[i + t - q_t]))
-        
+
         summed_cost += costs[i + t - q_t]
         if t - q_t - 1 < 0:
             break
@@ -249,7 +249,7 @@ def custom_viterbi_n_segments(costs, n_frames, n_segments):
 
 def l2_n_segments(embedding, z, n_frames_per_segment=7, n_min_frames=0,
         n_max_frames=15, dur_weight=0, n_min_segments=0):
-    
+
     # Hyperparameters
     n_segments = max(1, int(round(z.shape[0]/n_frames_per_segment)))
     if n_segments < n_min_segments:
@@ -258,7 +258,7 @@ def l2_n_segments(embedding, z, n_frames_per_segment=7, n_min_frames=0,
 
     # Distances between each z and each embedding (squared Euclidean)
     embedding_distances = distance.cdist(z, embedding, metric="sqeuclidean")
-    
+
     # Costs for segment intervals
     segment_intervals = get_segment_intervals(z.shape[0], n_max_frames)
     costs = np.inf*np.ones(len(segment_intervals))
@@ -273,12 +273,12 @@ def l2_n_segments(embedding, z, n_frames_per_segment=7, n_min_frames=0,
             np.sum(embedding_distances[i_start:i_end, :], axis=0)
             ) - dur_weight*(dur - 1)
         costs[i_seg] = cost
-    
+
     # Viterbi segmentation
     summed_cost, boundaries = custom_viterbi_n_segments(
         costs, z.shape[0], n_segments
         )
-    
+
     # Code assignments
     segmented_codes = []
     j_prev = 0
@@ -288,7 +288,7 @@ def l2_n_segments(embedding, z, n_frames_per_segment=7, n_min_frames=0,
         code = np.argmin(np.sum(embedding_distances[i_start:i_end, :], axis=0))
         segmented_codes.append((i_start, i_end, code))
         j_prev = j + 1
-    
+
     return boundaries, segmented_codes
 
 
@@ -306,7 +306,7 @@ def benji_l2_n_segments(embedding, z, n_frames_per_segment=7,
 
     # Distances between each z and each embedding (squared Euclidean)
     dists = distance.cdist(z, embedding, metric="sqeuclidean")
-    
+
     # Initialise cost and history tensors
     # Sequence length, codes, segments
     T, K, S = z.shape[0], embedding.shape[0], n_segments
@@ -314,7 +314,7 @@ def benji_l2_n_segments(embedding, z, n_frames_per_segment=7,
     q = np.zeros((T, K, S), np.int)  # history
     alphas[0, :, 0] = dists[0, :]
     alphas[0, :, 1:] = np.inf
-    
+
     # Dynamic programming (unvectorised)
     # for t in range(1, T):
     #     for k in range(K):
@@ -360,9 +360,9 @@ def benji_l2_n_segments(embedding, z, n_frames_per_segment=7,
         codes[t - 1] = q[t, codes[t], s]
         if codes[t - 1] != codes[t]:
             s -= 1
-    
+
     # print(codes)
-            
+
     # Boundaries and code assignments
     boundaries = np.zeros(z.shape[0], dtype=bool)
     segmented_codes = []
@@ -378,5 +378,5 @@ def benji_l2_n_segments(embedding, z, n_frames_per_segment=7,
         boundaries[i + 1] = True
     boundaries[-1] = True  # final position is always boundary
     segmented_codes.append((prev_boundary, z.shape[0], prev_code))
-    
+
     return boundaries, segmented_codes
